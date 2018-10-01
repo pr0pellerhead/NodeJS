@@ -91,7 +91,7 @@ var getAllUsers = () => {
             'stojanko'
         ];
         if(condition == true){
-            return resolve(users);
+            return resolve(users); 
         } else {
             return reject('no users found');
         }
@@ -115,8 +115,8 @@ var calculateUsers = (users) => {
 // console.log(getAllUsers());
 
 getAllUsers()
-.then((u) => {
-    return calculateUsers(u);
+.then((users) => {
+    return calculateUsers(users);
 })
 .then((total) => {
     console.log(total);
