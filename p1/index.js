@@ -6,6 +6,7 @@ var mongo = require('./db/mongo');
 var auth = require('./handlers/auth');
 var root = require('./handlers/root');
 var users = require('./handlers/users');
+var cv = require('./handlers/cvs');
 
 mongo.Init();
 
@@ -24,6 +25,12 @@ app.get('/users/:id', users.getUserById);
 app.post('/users', users.createUser);
 app.delete('/users/:id', users.deleteById);
 app.put('/users/:id', users.updateById);
+
+app.post('/cv', cv.createCV);
+app.put('/cv/:id', cv.updateCVById);
+app.delete('/cv/:id', cv.deleteCVById);
+app.get('/cv', cv.getAllCVs);
+app.get('/cv/:id', cv.getCVById);
 
 app.listen(80);
 
