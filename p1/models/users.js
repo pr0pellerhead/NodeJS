@@ -83,4 +83,4 @@ module.exports = {
     createUser,
     deleteById,
     updateById
-}
+};
