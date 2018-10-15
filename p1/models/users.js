@@ -3,10 +3,11 @@ var mongoose = require("mongoose");
 var Users = mongoose.model(
     'users', 
     new mongoose.Schema({
-        //"_id": mongoose.SchemaTypes.ObjectId,
         "firstname" : String, 
         "lastname" : String, 
         "email" : String, 
+        "password": String,
+        "role": String,
         "location" : {
             "country" : String, 
             "city" : String, 
@@ -16,7 +17,7 @@ var Users = mongoose.model(
 );
 
 var getAllUsers = (cb) => {
-    Users.find({}, (err, data) => {
+    Users.find({}, {password: -1}, (err, data) => {
         if(err){
             return cb(err, null);
         } else {
@@ -27,6 +28,16 @@ var getAllUsers = (cb) => {
 
 var getUsersByName = (name, cb) => {
     Users.find({firstname: name}, (err, data) => {
+        if(err){
+            return cb(err, null);
+        } else {
+            return cb(null, data);
+        }
+    });
+};
+
+var getUserByEmail = (email, cb) => {
+    Users.findOne({email: email}, {password: 1, role: 1, firstname: 1, lastname: 1, email: 1}, (err, data) => {
         if(err){
             return cb(err, null);
         } else {
@@ -82,5 +93,6 @@ module.exports = {
     getUserById,
     createUser,
     deleteById,
-    updateById
+    updateById,
+    getUserByEmail
 };

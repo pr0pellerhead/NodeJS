@@ -1,4 +1,5 @@
 var users = require("../models/users");
+var bcrypt = require("bcryptjs");
 
 var getAllUsers = (req, res) => {
     users.getAllUsers((err, data) => {
@@ -33,14 +34,26 @@ var getUserById = (req, res) => {
 }
 
 var createUser = (req, res) => {
-    // res.send(req.body);
-    users.createUser(req.body, (err) => {
-        if(err) {
-            res.send(err);
-        } else {
-            res.status(201).send("OK");
-        }
-    })
+    var valid = req.body.firstname != undefined && req.body.firstname != ""
+                && req.body.lastname != undefined && req.body.lastname != ""
+                && req.body.email != undefined && req.body.email != ""
+                && req.body.password != undefined && req.body.password != "";
+    if(valid) {
+        bcrypt.hash(req.body.password, 10, (err, hash) => {
+            var userData = req.body;
+            userData.password = hash;
+            userData.role = 'user';
+            users.createUser(userData, (err) => {
+                if(err) {
+                    res.send(err);
+                } else {
+                    res.status(201).send("OK");
+                }
+            });
+        });
+    } else {
+        res.status(400).send('Bad request')
+    }
 }
 
 var deleteById = (req, res) => {

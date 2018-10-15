@@ -17,7 +17,10 @@ app.use(bodyParser.json());
 app.use(jwt({
         secret: 'pero_e_haker'
     }).unless({
-        path: ['/login']
+        path: [
+            {url: '/login', methods: ['POST']},
+            {url: '/users', methods: ['POST']}
+        ]
     })
 );
 
