@@ -8,6 +8,7 @@ var auth = require('./handlers/auth');
 var root = require('./handlers/root');
 var users = require('./handlers/users');
 var cv = require('./handlers/cvs');
+var films = require('./handlers/films');
 
 mongo.Init();
 
@@ -19,7 +20,8 @@ app.use(jwt({
     }).unless({
         path: [
             {url: '/login', methods: ['POST']},
-            {url: '/users', methods: ['POST']}
+            {url: '/users', methods: ['POST']},
+            {url: '/films', methods: ['POST', 'GET']},
         ]
     })
 );
@@ -41,6 +43,9 @@ app.put('/cv/:id', cv.updateCVById);
 app.delete('/cv/:id', cv.deleteCVById);
 app.get('/cv', cv.getAllCVs);
 app.get('/cv/:id', cv.getCVById);
+
+app.post('/films', films.addFilm);
+app.get('/films', films.getAllFilms);
 
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
