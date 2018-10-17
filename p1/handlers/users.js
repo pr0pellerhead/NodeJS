@@ -39,18 +39,31 @@ var createUser = (req, res) => {
                 && req.body.email != undefined && req.body.email != ""
                 && req.body.password != undefined && req.body.password != "";
     if(valid) {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-            var userData = req.body;
-            userData.password = hash;
-            userData.role = 'user';
-            users.createUser(userData, (err) => {
-                if(err) {
-                    res.send(err);
+
+        users.getUserByEmail(req.body.email, (err, data) => {
+            if (err) {
+                return res.send(err);
+            } else {
+                if (data == null) {
+                    bcrypt.hash(req.body.password, 10, (err, hash) => {
+                        var userData = req.body;
+                        userData.password = hash;
+                        userData.role = 'user';
+                        users.createUser(userData, (err) => {
+                            if(err) {
+                                res.send(err);
+                            } else {
+                                res.status(201).send("OK");
+                            }
+                        });
+                    });
                 } else {
-                    res.status(201).send("OK");
+                    res.status(400).send("User exists");
                 }
-            });
-        });
+            }
+        })
+
+       
     } else {
         res.status(400).send('Bad request')
     }
