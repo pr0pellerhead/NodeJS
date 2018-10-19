@@ -1,5 +1,7 @@
+var utils = require("../utils");
 var users = require("../models/users");
 var bcrypt = require("bcryptjs");
+var validator = require("fastest-validator");
 
 var getAllUsers = (req, res) => {
     users.getAllUsers((err, data) => {
@@ -34,12 +36,26 @@ var getUserById = (req, res) => {
 }
 
 var createUser = (req, res) => {
-    var valid = req.body.firstname != undefined && req.body.firstname != ""
-                && req.body.lastname != undefined && req.body.lastname != ""
-                && req.body.email != undefined && req.body.email != ""
-                && req.body.password != undefined && req.body.password != "";
-    if(valid) {
+    // var valid = req.body.firstname != undefined && req.body.firstname != ""
+    //             && req.body.lastname != undefined && req.body.lastname != ""
+    //             && req.body.email != undefined && req.body.email != ""
+    //             && req.body.password != undefined && req.body.password != "";
+    // var valid = !utils.isEmpty(req.body.firstname) 
+    //             && !utils.isEmpty(req.body.lastname) 
+    //             && !utils.isEmpty(req.body.email) 
+    //             && !utils.isEmpty(req.body.password);
 
+    var schema = {
+        firstname: {type: 'string', empty: false},
+        lastname: {type: 'string', empty: false},
+        email: {type: 'email', empty: false},
+        password: {type: 'string', min: 8, max: 16, empty: false}
+    }
+
+    let v = new validator();
+    var valid = v.validate(req.body, schema);
+
+    if(valid === true) {
         users.getUserByEmail(req.body.email, (err, data) => {
             if (err) {
                 return res.send(err);
@@ -62,10 +78,8 @@ var createUser = (req, res) => {
                 }
             }
         })
-
-       
     } else {
-        res.status(400).send('Bad request')
+        res.status(400).send(valid);
     }
 }
 
