@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var jwt = require('express-jwt');
+var fileUpload = require('express-fileupload');
 
 var mongo = require('./db/mongo');
 
@@ -9,6 +10,7 @@ var root = require('./handlers/root');
 var users = require('./handlers/users');
 var cv = require('./handlers/cvs');
 var films = require('./handlers/films');
+var upload = require('./handlers/upload');
 
 mongo.Init();
 
@@ -22,9 +24,16 @@ app.use(jwt({
             {url: '/login', methods: ['POST']},
             {url: '/users', methods: ['POST']},
             {url: '/films', methods: ['POST', 'GET']},
+            {url: '/upload', methods: ['POST']},
         ]
     })
 );
+
+app.use(fileUpload({
+    limits: { 
+        fileSize: 50 * 1024 * 1024 
+    }
+}));
 
 app.get('/', root);
 
@@ -46,6 +55,8 @@ app.get('/cv/:id', cv.getCVById);
 
 app.post('/films', films.addFilm);
 app.get('/films', films.getAllFilms);
+
+app.post('/upload', upload.uploadFile);
 
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {

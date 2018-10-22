@@ -2,14 +2,11 @@ var jwt = require('jsonwebtoken');
 var users = require('../models/users');
 var bcrypt = require("bcryptjs");
 var validator = require("fastest-validator");
+var validatorSchema = require("../validators/users");
 var v = new validator();
 
 var login = (req, res) => {
-    var schema = {
-        email: {type: 'email', empty: false},
-        password: {type: 'string', min: 8, max: 16, empty: false}
-    }
-    var valid = v.validate(req.body, schema);
+    var valid = v.validate(req.body, validatorSchema.userLogin);
     if (valid === true) {
         users.getUserByEmail(req.body.email, (err, userData) => {
             bcrypt.compare(req.body.password, userData.password)
