@@ -15,13 +15,16 @@ var upload = require('./handlers/upload');
 mongo.Init();
 
 var app = express();
+
+app.use('/', express.static('www'));
+
 app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
 app.use(jwt({
         secret: 'pero_e_haker'
     }).unless({
         path: [
-            {url: '/login', methods: ['POST']},
+            {url: '/auth/login', methods: ['POST']},
             {url: '/users', methods: ['POST']},
             {url: '/films', methods: ['POST', 'GET']},
             {url: '/upload', methods: ['POST']},
@@ -35,10 +38,12 @@ app.use(fileUpload({
     }
 }));
 
-app.get('/', root);
 
-app.post('/login', auth.login);
-app.get('/logout', auth.logout); // logout(req, res);
+
+// app.get('/', root);
+
+app.post('/auth/login', auth.login);
+app.get('/auth/logout', auth.logout); // logout(req, res);
 
 app.get('/users', users.getAllUsers);
 app.get('/users/name/:name', users.getUserByName);
@@ -57,6 +62,8 @@ app.post('/films', films.addFilm);
 app.get('/films', films.getAllFilms);
 
 app.post('/upload', upload.uploadFile);
+app.post('/upload/avatar', upload.uploadAvatar);
+app.post('/upload/doc', upload.uploadDocument);
 
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
